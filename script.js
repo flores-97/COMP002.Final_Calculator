@@ -23,9 +23,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }//shows users input into 'display' area at top of calculator 
 
     function handleNumClick(event) {
-        if (isEvaluated) return;
+        if (isEvaluated) 
+            return;
+        
         const value = event.target.textContent;//will look for users clicks on numbers 
-
         const lastIsOperator = /[+\-*/]/.test(currentExpression.slice(-1));
         const currentOperatorIsEmpty = lastIsOperator || currentExpression === '';//registers numbers clicks
 
@@ -37,6 +38,51 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentExpression += value;
             }
             updateDisplay(currentExpression);//should prevent user from using number like '01'
+        }
+    }
+
+    function handleOperatorClick(event) {
+        if (isEvaluated)
+            return;
+        if ( currentExpression === '')
+            return;//will look for when user uses +, -, *, /.
+
+        const operator = event.target.textContent;
+        const lastChar = currentExpression.slice(-1);
+
+        if (/[+\-*/]/.test(lastChar)) {
+            currentExpression = currentExpression.slice(0, -1) + operator;
+        }
+        else{
+            currentExpression += operator;
+        }
+        updateDisplay(currentExpression);
+    }
+
+    function handleEqualClick() {
+        if (isEvaluated || currentExpression === '')
+            return;//returns user's result
+
+        try {//tries to solve 
+            const result = new Function ('return' + currentExpression)();//registers function that uses '+ _ * /'.
+            const fullExpression = '${currentExpression = ${result}';
+
+            updateDisplay(fullExpression);
+            isEvaluated = true;//prevents user from clicking anywhere until clear is clicked
+
+            calculatorButtons.forEach(button => {
+                if (button.id !== 'button-clear') { 
+                    button.disable = true;
+                }
+            });
+
+            localStorage.setItem('lastExpression', currentExpression);
+            localStorage.setItem('lastResult', result);
+            lastResultDisplay.textContent = fullExpression;
+
+        }
+        catch (error) {
+            updateDisplay('Error')//searches for any NaN
         }
     }
 });
