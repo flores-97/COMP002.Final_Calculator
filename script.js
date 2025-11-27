@@ -11,11 +11,11 @@ document.addEventListener('DOMContentLoaded', () => {
     let isEvaluated = false;//will check if whether '=' has been pressed.
 
     //local storage items
-    const savedlastExpression = localStorage.getItem('lastExpression');
+    const savedLastExpression = localStorage.getItem('lastExpression');
     const savedLastResult = localStorage.getItem('lastResult');
 
-    if (savedlastExpression && savedLastResult) {
-        lastResultDisplay.textContent = '${savedLastExpression} = ${savedLastResult}';
+    if (savedLastExpression && savedLastResult) {
+        lastResultDisplay.textContent = `${savedLastExpression} = ${savedLastResult}`;
     }//will show the last expression entered by user.
     
     function updateDisplay(value) {
@@ -27,18 +27,17 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         
         const value = event.target.textContent;//will look for users clicks on numbers 
-        const lastIsOperator = /[+\-*/]/.test(currentExpression.slice(-1));
-        const currentOperatorIsEmpty = lastIsOperator || currentExpression === '';//registers numbers clicks
+        const lastCharIsOperator = /[+\-*/]/.test(currentExpression.slice(-1));
+        const currentOperatorIsEmpty = lastCharIsOperator || currentExpression === '';//registers numbers clicks
 
         if (currentOperatorIsEmpty && value === '0'){
-            if (!currentExpression.endswith('0') || lastIsOperator) {
+            if (!currentExpression.endsWith('0') || lastCharIsOperator) {
                 currentExpression += value;//check whether last entry was number or operator 
             }
-            else {
-                currentExpression += value;
-            }
-            updateDisplay(currentExpression);//should prevent user from using number like '01'
+        } else {
+            currentExpression += value;
         }
+            updateDisplay(currentExpression);//should prevent user from using number like '01'
     }
 
     function handleOperatorClick(event) {
@@ -64,15 +63,15 @@ document.addEventListener('DOMContentLoaded', () => {
             return;//returns user's result
 
         try {//tries to solve 
-            const result = new Function ('return' + currentExpression)();//registers function that uses '+ _ * /'.
-            const fullExpression = '${currentExpression = ${result}';
+            const result = new Function ('return ' + currentExpression)();//registers function that uses '+ _ * /'.
+            const fullExpression = `${currentExpression} = ${result}`;
 
             updateDisplay(fullExpression);
             isEvaluated = true;//prevents user from clicking anywhere until clear is clicked
 
             calculatorButtons.forEach(button => {
                 if (button.id !== 'button-clear') { 
-                    button.disable = true;
+                    button.disabled = true;
                 }
             });
 
@@ -82,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         }
         catch (error) {
-            updateDisplay('Error')//searches for any NaN
+            updateDisplay('Error')
         }
     }
 
@@ -92,11 +91,11 @@ document.addEventListener('DOMContentLoaded', () => {
         updateDisplay('');//resets calculator for next equation
 
         calculatorButtons.forEach(button => {
-            button.disable = false;
+            button.disabled = false;
         });
     }
     numberButtons.forEach(button => {
-        button.addEventListener('click', handleNumClick);
+        button.addEventListener('click', handleNumberClick);
     });
 
     operatorButtons.forEach(button => {
