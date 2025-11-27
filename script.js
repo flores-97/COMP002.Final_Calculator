@@ -11,18 +11,18 @@ document.addEventListener('DOMContentLoaded', () => {
     let isEvaluated = false;//will check if whether '=' has been pressed.
 
     //local storage items
-    const savelastExpression = localStorage.getItem('lastExpression');
-    const saveLastResult = localStorage.getItem('lastResult');
+    const savedlastExpression = localStorage.getItem('lastExpression');
+    const savedLastResult = localStorage.getItem('lastResult');
 
-    if (savelastExpression && saveLastResult) {
-        lastResultDisplay.textContent = '${saveLastExpression} = ${saveLastResult}';
+    if (savedlastExpression && savedLastResult) {
+        lastResultDisplay.textContent = '${savedLastExpression} = ${savedLastResult}';
     }//will show the last expression entered by user.
     
     function updateDisplay(value) {
         display.textContent = value;
     }//shows users input into 'display' area at top of calculator 
 
-    function handleNumClick(event) {
+    function handleNumberClick(event) {
         if (isEvaluated) 
             return;
         
@@ -85,5 +85,26 @@ document.addEventListener('DOMContentLoaded', () => {
             updateDisplay('Error')//searches for any NaN
         }
     }
+
+    function handleClearClick() {
+        currentExpression = '';
+        isEvaluated = false;
+        updateDisplay('');//resets calculator for next equation
+
+        calculatorButtons.forEach(button => {
+            button.disable = false;
+        });
+    }
+    numberButtons.forEach(button => {
+        button.addEventListener('click', handleNumClick);
+    });
+
+    operatorButtons.forEach(button => {
+        button.addEventListener('click', handleOperatorClick)
+    });
+
+    equalsButton.addEventListener('click', handleEqualClick);
+
+    clearButton.addEventListener('click', handleClearClick);
 });
     
